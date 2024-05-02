@@ -1,0 +1,81 @@
+version: '3'
+services:
+  user:
+    container_name: user
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5430:5432"
+    environment:
+      POSTGRES_USER: jp_user
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: credUserDb
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+  property-manage:
+    container_name: property
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_USER: jp_property
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: credPropertyDb
+    volumes:
+      - property_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  property-manager:
+    container_name: propertyManager
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: jp_property_manager
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: credPropertyManagerDb
+    volumes:
+      - property_manager_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+  pgadmin4:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: hsiskesks@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 123
+    networks:
+      - app_network
+  zipkin:
+    image: openzipkin/zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - app_network
+  rabitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app_network
+
+
+volumes:
+  user_data: {}
+  property_data: {}
+  property_manager_data: {}
+networks:
+  app_network:
+    driver: bridge
+
+
